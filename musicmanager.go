@@ -222,13 +222,13 @@ func (c *TracksListCall) PurchasedOnly(purchasedOnly bool) *TracksListCall {
 }
 
 // UpdatedMin sets a cutoff date for the request: only tracks
-// that were updated after this timestamp will be returned.  Specifying
-// too large a value returns a 304 not modified *googleapi.Error.
-// However, the format of the timestamp is unknown.
-//func (c *TracksListCall) UpdatedMin(updatedMin int64) *TracksListCall {
-//	c.c.UpdatedMin = proto.Int64(updatedMin)
-//	return c
-//}
+// that were modified after this timestamp will be returned.  Expressed
+// as a Unix timestamp in microseconds.  Specifying too large a value
+// returns a 304 not modified *googleapi.Error when Do is called.
+func (c *TracksListCall) UpdatedMin(updatedMin int64) *TracksListCall {
+	c.c.UpdatedMin = proto.Int64(updatedMin)
+	return c
+}
 
 func (c *TracksListCall) Do() (*pb.GetTracksToExportResponse, error) {
 	list, err := c.s.client.GetTracksToExport(c.c)

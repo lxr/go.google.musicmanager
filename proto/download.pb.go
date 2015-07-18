@@ -101,8 +101,8 @@ type GetTracksToExportRequest struct {
 	ContinuationToken *string `protobuf:"bytes,3,opt,name=continuation_token" json:"continuation_token,omitempty"`
 	// Only list tracks of this type.
 	ExportType *GetTracksToExportRequest_TracksToExportType `protobuf:"varint,4,opt,name=export_type,enum=musicmanager.GetTracksToExportRequest_TracksToExportType" json:"export_type,omitempty"`
-	// Likely a cutoff timestamp for filtering out older tracks, but the
-	// format of the timestamp is unknown.
+	// Only list tracks that were modified after this time.  Expressed as
+	// a Unix timestamp in microseconds.
 	UpdatedMin       *int64 `protobuf:"varint,5,opt,name=updated_min" json:"updated_min,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -222,7 +222,8 @@ type GetTracksToExportResponse struct {
 	DownloadTrackInfo []*DownloadTrackInfo `protobuf:"bytes,2,rep,name=download_track_info" json:"download_track_info,omitempty"`
 	// The page token for the next page of tracks.
 	ContinuationToken *string `protobuf:"bytes,3,opt,name=continuation_token" json:"continuation_token,omitempty"`
-	// Undocumented fields.
+	// The last time a track was modified.  Expressed as a Unix timestamp
+	// in microseconds.
 	UpdatedMin       *int64 `protobuf:"varint,4,opt,name=updated_min" json:"updated_min,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }

@@ -1507,8 +1507,7 @@ type Track struct {
 	TrackNumber *int32 `protobuf:"varint,13,opt,name=track_number" json:"track_number,omitempty"`
 	// The genre of the track.
 	Genre *string `protobuf:"bytes,14,opt,name=genre" json:"genre,omitempty"`
-	// The duration of the track in milliseconds.  This is used to provide
-	// the seek bar in the web interface, so make sure it's correct.
+	// The duration of the track in milliseconds.
 	DurationMillis     *int64                    `protobuf:"varint,15,opt,name=duration_millis" json:"duration_millis,omitempty"`
 	BeatsPerMinute     *int32                    `protobuf:"varint,16,opt,name=beats_per_minute" json:"beats_per_minute,omitempty"`
 	OriginalBitRate    *int32                    `protobuf:"varint,44,opt,name=original_bit_rate" json:"original_bit_rate,omitempty"`

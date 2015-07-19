@@ -66,9 +66,9 @@ package musicmanager
 //
 // Endpoint base URL: https://android.clients.google.com/upsj/
 //
-// Note: Though the endpoints must be accessed over HTTPS, this server
-// is known to have some certificate problems.  You may have to turn
-// off SSL verification to access it.
+// Note: To access this server over TLS, your client needs to support
+// SNI.  (Most do.)  See https://tools.ietf.org/html/rfc3546#section-3.1
+// for details.
 type UploadService interface {
 
 	// UpAuth authorizes the specified device with this account.

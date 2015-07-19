@@ -19,8 +19,9 @@
 package musicmanager
 
 // BUG(lor): This package needs to make requests to the server
-// android.clients.google.com, which has been known to have certificate
-// problems.  You may have to turn off SSL verification to use it.
+// android.clients.google.com, which can only be accessed over TLS using
+// SNI (see https://tools.ietf.org/html/rfc3546#section-3.1).  This has
+// been known to cause problems on Google App Engine.
 
 import (
 	"fmt"

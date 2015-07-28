@@ -1,85 +1,159 @@
+// This file implements the low-level service calls of the Google
+// Music Manager service.
+
 package musicmanager
 
 import (
+	"bytes"
+	"encoding/json"
 	"io"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 
-	"google.golang.org/api/googleapi"
+	"github.com/golang/protobuf/proto"
 
-	pb "google-musicmanager-go/proto"
+	mmdspb "go-google-musicmanager/internal/download_proto/service"
+	mmssjs "go-google-musicmanager/internal/session_json"
+	mmuspb "go-google-musicmanager/internal/upload_proto/service"
 )
 
-// A progressReader calls its pu function every time it is read from
-// with the number of bytes read so far, and the number of bytes in
-// total.
-type progressReader struct {
-	r       io.Reader
-	pu      googleapi.ProgressUpdater
-	current int64
-	total   int64
-}
-
-func (pr *progressReader) Read(p []byte) (int, error) {
-	n, err := pr.r.Read(p)
-	pr.current += int64(n)
-	pr.pu(pr.current, pr.total)
-	return n, err
-}
-
-type tracksInsertBatchRequest []*tracksInsertBatchRequestEntry
-
-type tracksInsertBatchRequestEntry struct {
-	*TracksInsertCall
-	callback func(string, error)
-}
-
-// A tracksInsertBatchRequestResponse is a map from client IDs to
-// in-progress insert call structures.  It is used as a bookkeeping
-// structure by TracksInsertBatchCall.Do.
-type tracksInsertBatchRequestResponse map[string]*tracksInsertBatchRequestResponseEntry
-
-// A tracksInsertBatchRequestResponseEntry represents one in-progress
-// insert call in a batch.  It comprises the original insert request
-// and its not-yet-complete response.
-type tracksInsertBatchRequestResponseEntry struct {
-	*tracksInsertBatchRequestEntry
-	*TracksInsertBatchResponseEntry
-}
-
-// errall terminates all calls in a batch that haven't terminated yet
-// with the given error.
-func (r tracksInsertBatchRequestResponse) errall(err error) {
-	for _, e := range r {
-		if e.ServerID == "" && e.Error == nil {
-			e.retval(err)
-		}
+func (c *Client) upAuth(req *mmuspb.UpAuthRequest) (mmuspb.UploadResponse_AuthStatus, error) {
+	res, err := c.uploadServiceCall("upauth", req)
+	if err != nil {
+		return mmuspb.UploadResponse_UNKNOWN, err
 	}
+	return res.AuthStatus, nil
 }
 
-// processTrackResponses parses a slice of TrackSampleResponses and
-// terminates any batch call whose client ID did not receive an
-// upload request with the corresponding error code; the rest are
-// assigned their server ID, and also collected in a slice that is
-// returned in the end.
-func (r tracksInsertBatchRequestResponse) processTrackResponses(ress []*pb.TrackSampleResponse) []*tracksInsertBatchRequestResponseEntry {
-	toUpload := make([]*tracksInsertBatchRequestResponseEntry, 0)
-	for _, res := range ress {
-		clientID := res.GetClientTrackId()
-		status := res.GetResponseCode()
-		e := r[clientID]
-		if status != pb.TrackSampleResponse_UPLOAD_REQUESTED {
-			e.retval(TracksInsertError(status))
-			continue
-		}
-		e.ServerID = res.GetServerTrackId()
-		toUpload = append(toUpload, e)
+func (c *Client) uploadMetadata(req *mmuspb.UploadMetadataRequest) (*mmuspb.UploadMetadataResponse, error) {
+	res, err := c.uploadServiceCall("metadata?version=1", req)
+	if err != nil {
+		return nil, err
 	}
-	return toUpload
+	return res.MetadataResponse, nil
 }
 
-// retval terminates a batch call with the given error.
-func (e *tracksInsertBatchRequestResponseEntry) retval(err error) {
-	e.Error = err
-	if e.callback != nil {
-		e.callback(e.ServerID, e.Error)
+func (c *Client) uploadSample(req *mmuspb.UploadSampleRequest) (*mmuspb.UploadSampleResponse, error) {
+	res, err := c.uploadServiceCall("sample?version=1", req)
+	if err != nil {
+		return nil, err
+	}
+	return res.SampleResponse, nil
+}
+
+func (c *Client) clientState(req *mmuspb.ClientStateRequest) (*mmuspb.ClientStateResponse, error) {
+	res, err := c.uploadServiceCall("clientstate", req)
+	if err != nil {
+		return nil, err
+	}
+	return res.ClientstateResponse, nil
+}
+
+func (c *Client) getJobs(req *mmuspb.GetJobsRequest) (*mmuspb.GetJobsResponse, error) {
+	res, err := c.uploadServiceCall("getjobs", req)
+	if err != nil {
+		return nil, err
+	}
+	return res.GetjobsResponse, nil
+}
+
+func (c *Client) updateUploadState(req *mmuspb.UpdateUploadStateRequest) error {
+	_, err := c.uploadServiceCall("uploadstate", req)
+	return err
+}
+
+func (c *Client) deleteUploadRequested(req *mmuspb.DeleteUploadRequestedRequest) error {
+	_, err := c.uploadServiceCall("deleteuploadrequested", req)
+	return err
+}
+
+func (c *Client) getTracksToExport(req *mmdspb.GetTracksToExportRequest) (*mmdspb.GetTracksToExportResponse, error) {
+	res := new(mmdspb.GetTracksToExportResponse)
+	url := "https://music.google.com/music/exportids"
+	return res, c.post(url, req, res)
+}
+
+func (c *Client) getDownloadSession(req *mmssjs.GetDownloadSessionRequest) (*mmssjs.GetDownloadSessionResponse, error) {
+	urlStr := "https://music.google.com/music/export?" + url.Values{
+		"version": {"2"},
+		"songid":  {req.SongID},
+	}.Encode()
+	reqp, err := http.NewRequest("GET", urlStr, nil)
+	if err != nil {
+		return nil, err
+	}
+	reqp.Header.Set("X-Device-ID", req.XDeviceID)
+	res := new(mmssjs.GetDownloadSessionResponse)
+	return res, c.do(reqp, res)
+}
+
+func (c *Client) getUploadSession(req *mmssjs.GetUploadSessionRequest) (*mmssjs.GetUploadSessionResponse, error) {
+	res := new(mmssjs.GetUploadSessionResponse)
+	url := "https://uploadsj.clients.google.com/uploadsj/rupio"
+	return res, c.post(url, req, res)
+}
+
+// uploadServiceCall protobuf-encodes the request and POSTs it to the
+// named endpoint under https://android.clients.google.com/upsj/,
+// decoding the response as a *pb.UploadResponse.
+func (c *Client) uploadServiceCall(endpoint string, req interface{}) (*mmuspb.UploadResponse, error) {
+	const baseURL = "https://android.clients.google.com/upsj/"
+	res := new(mmuspb.UploadResponse)
+	return res, c.post(baseURL+endpoint, req, res)
+}
+
+// post encodes the request object as protobuf if it implements
+// proto.Message, and as JSON otherwise, and POSTs the result to the
+// given URL.  The response is then similarly decoded.
+func (c *Client) post(url string, req, res interface{}) error {
+	var body io.Reader
+	var buf []byte
+	var err error
+	switch v := req.(type) {
+	case proto.Message:
+		buf, err = proto.Marshal(v)
+	default:
+		buf, err = json.Marshal(v)
+	}
+	if err != nil {
+		return err
+	}
+	if buf != nil {
+		body = bytes.NewReader(buf)
+	}
+	reqp, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		return err
+	}
+	return c.do(reqp, res)
+}
+
+// do executes the given *http.Request and decodes its response to
+// res as protobuf if res implements proto.Message, and as JSON
+// otherwise.
+func (c *Client) do(req *http.Request, res interface{}) error {
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		res = resp.StatusCode
+	}
+	buf, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	switch v := res.(type) {
+	case int:
+		return &RequestError{
+			Code:    v,
+			Message: string(buf),
+		}
+	case proto.Message:
+		return proto.Unmarshal(buf, v)
+	default:
+		return json.Unmarshal(buf, v)
 	}
 }

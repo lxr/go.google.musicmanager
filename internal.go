@@ -13,9 +13,9 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	mmdspb "go-google-musicmanager/internal/download_proto/service"
-	mmssjs "go-google-musicmanager/internal/session_json"
-	mmuspb "go-google-musicmanager/internal/upload_proto/service"
+	mmdspb "my-git.appspot.com/go.google.musicmanager/internal/download_proto/service"
+	mmssjs "my-git.appspot.com/go.google.musicmanager/internal/session_json"
+	mmuspb "my-git.appspot.com/go.google.musicmanager/internal/upload_proto/service"
 )
 
 func (c *Client) upAuth(req *mmuspb.UpAuthRequest) (mmuspb.UploadResponse_AuthStatus, error) {

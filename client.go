@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"net/http"
 
-	convert "go-google-musicmanager/internal/convert"
-	mmdspb "go-google-musicmanager/internal/download_proto/service"
-	mmldpb "go-google-musicmanager/internal/locker_proto/data"
-	mmssjs "go-google-musicmanager/internal/session_json"
-	mmudpb "go-google-musicmanager/internal/upload_proto/data"
-	mmuspb "go-google-musicmanager/internal/upload_proto/service"
+	convert "my-git.appspot.com/go.google.musicmanager/internal/convert"
+	mmdspb "my-git.appspot.com/go.google.musicmanager/internal/download_proto/service"
+	mmldpb "my-git.appspot.com/go.google.musicmanager/internal/locker_proto/data"
+	mmssjs "my-git.appspot.com/go.google.musicmanager/internal/session_json"
+	mmudpb "my-git.appspot.com/go.google.musicmanager/internal/upload_proto/data"
+	mmuspb "my-git.appspot.com/go.google.musicmanager/internal/upload_proto/service"
 )
 
 // Client is a Music Manager client.

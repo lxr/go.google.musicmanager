@@ -6,9 +6,9 @@ package musicmanager
 import (
 	"fmt"
 
-	mmdspb "go-google-musicmanager/internal/download_proto/service"
-	mmssjs "go-google-musicmanager/internal/session_json"
-	mmuspb "go-google-musicmanager/internal/upload_proto/service"
+	mmdspb "my-git.appspot.com/go.google.musicmanager/internal/download_proto/service"
+	mmssjs "my-git.appspot.com/go.google.musicmanager/internal/session_json"
+	mmuspb "my-git.appspot.com/go.google.musicmanager/internal/upload_proto/service"
 )
 
 // Scope is the OAuth scope used by this API.

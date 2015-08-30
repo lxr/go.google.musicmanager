@@ -19,7 +19,7 @@ const Scope = "https://www.googleapis.com/auth/musicmanager"
 type RegisterError mmuspb.UploadResponse_AuthStatus
 
 func (e RegisterError) Error() string {
-	return fmt.Sprint("musicmanager register error:", mmuspb.UploadResponse_AuthStatus(e))
+	return fmt.Sprint("musicmanager register error: ", mmuspb.UploadResponse_AuthStatus(e))
 }
 
 // A ListError is returned by Client.ListTracks if the server refuses
@@ -27,7 +27,7 @@ func (e RegisterError) Error() string {
 type ListError mmdspb.GetTracksToExportResponse_TracksToExportStatus
 
 func (e ListError) Error() string {
-	return fmt.Sprint("musicmanager list error:", mmdspb.GetTracksToExportResponse_TracksToExportStatus(e))
+	return fmt.Sprint("musicmanager list error: ", mmdspb.GetTracksToExportResponse_TracksToExportStatus(e))
 }
 
 // An ImportError is returned by Client.ImportTracks if the server
@@ -35,7 +35,7 @@ func (e ListError) Error() string {
 type ImportError mmuspb.TrackSampleResponse_ResponseCode
 
 func (e ImportError) Error() string {
-	return fmt.Sprint("musicmanager import error:", mmuspb.TrackSampleResponse_ResponseCode(e))
+	return fmt.Sprint("musicmanager import error: ", mmuspb.TrackSampleResponse_ResponseCode(e))
 }
 
 // A RequestError is returned by all Client methods if an HTTP request
@@ -58,24 +58,25 @@ const (
 type TrackRating int
 
 const (
-	NoRating   TrackRating = 1
-	OneStar    TrackRating = 2 // thumbs down
-	TwoStars   TrackRating = 3
-	ThreeStars TrackRating = 4
-	FourStars  TrackRating = 5
-	FiveStars  TrackRating = 6 // thumbs up
+	NoRating TrackRating = 1 + iota
+
+	OneStar // thumbs down
+	TwoStars
+	ThreeStars
+	FourStars
+	FiveStars // thumbs up
 )
 
 // TrackType defines the origin of a track.
 type TrackType int
 
 const (
-	Matched             TrackType = 1
-	Unmatched           TrackType = 2
-	Local               TrackType = 3
-	Purchased           TrackType = 4
-	MetadataOnlyMatched TrackType = 5
-	Promotional         TrackType = 6
+	Matched TrackType = 1 + iota
+	Unmatched
+	Local
+	Purchased
+	MetadataOnlyMatched
+	Promotional
 )
 
 // An ImageRef is a reference to an external image.
@@ -112,7 +113,10 @@ type Track struct {
 	Rating          TrackRating
 	TrackType       TrackType
 	AlbumArtRef     []*ImageRef
-	BitRate         int // in kbps
+
+	// BitRate is the bitrate of the track in kbps, or 0 if don't
+	// care.
+	BitRate int
 
 	// The Sampler function can be optionally used to provide the
 	// server with a 128kbps MP3 sample of the track if requested.
@@ -129,7 +133,7 @@ type TrackList struct {
 	// Page token for the next page of tracks.
 	PageToken string `convert:"/ContinuationToken"`
 
-	// The last time a one of the tracks in the list was modified,
+	// The last time one of the tracks in the list was modified,
 	// expressed as a Unix timestamp in microseconds.
 	UpdatedMin int64 `convert:"/UpdatedMin"`
 

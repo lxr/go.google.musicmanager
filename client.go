@@ -71,7 +71,7 @@ func (c *Client) ExportTrack(id string) (string, error) {
 // ListTracks lists the user's tracks from least to most recently
 // accessed.  It can optionally filter for purchased or promotional
 // tracks only, or for tracks last modified after a given Unix timestamp
-// (microsecond precision.)  Long responses may be returned in chunks,
+// (microsecond precision).  Long responses may be returned in chunks,
 // in which case the PageToken field of the TrackList object should
 // be given to a new ListTracks call.
 func (c *Client) ListTracks(purchasedOnly bool, updatedMin int64, pageToken string) (*TrackList, error) {

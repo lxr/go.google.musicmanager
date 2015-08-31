@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"text/template"
 
-	"my-git.appspot.com/go.google.musicmanager/internal/convert"
+	"github.com/lxr/go.google.musicmanager/internal/convert"
 )
 
 type GetDownloadSessionRequest struct {

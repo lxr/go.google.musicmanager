@@ -210,21 +210,18 @@ func (c *Client) ImportTracks(tracks []*Track) (urls []string, errs []error) {
 		sidm[i] = res.ServerTrackId
 	}
 	// Acquire upload sessions.
-	uploaded := 0
-	total := len(sidm)
 	urls = make([]string, len(tracks))
 	for i, id := range sidm {
 		trk := tracks[i]
 		res, err := c.getUploadSession(&mmssjs.GetUploadSessionRequest{
-			Name:                      id,
-			UploaderId:                c.id,
-			ClientId:                  trk.ClientId,
-			ServerId:                  id,
-			TrackBitRate:              trk.BitRate,
-			CurrentUploadingTrack:     trk.Title,
-			CurrentTotalUploadedCount: uploaded,
-			ClientTotalSongCount:      total,
-			SyncNow:                   true,
+			Name:         id,
+			UploaderId:   c.id,
+			ClientId:     trk.ClientId,
+			ServerId:     id,
+			TrackBitRate: trk.BitRate,
+			// BUG(lor): Client.ImportTracks does not
+			// activate the upload progress tracker on
+			// https://play.google.com/music.
 		})
 		if err != nil {
 			errs[i] = err

@@ -66,7 +66,7 @@ func (c *Client) ExportTrack(id string) (string, error) {
 		SongID:    id,
 	})
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	return res.URL, nil
 }

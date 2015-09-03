@@ -129,14 +129,20 @@ func (c *Client) post(url string, req, res interface{}) error {
 	return c.do(reqp, res)
 }
 
-// do executes the given *http.Request and decodes its response to
-// res as protobuf if res implements proto.Message, and as JSON
-// otherwise.
+// do executes the given *http.Request and decodes its response to res
+// using parseResponse.
 func (c *Client) do(req *http.Request, res interface{}) error {
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return err
 	}
+	return parseResponse(resp, res)
+}
+
+// parseResponse parses resp into res as protobuf if res implements
+// proto.Message, and as JSON otherwise.  If resp has a non-2xx status
+// code, the returned error will be of type *RequestError.
+func parseResponse(resp *http.Response, res interface{}) error {
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		res = resp.StatusCode

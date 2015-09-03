@@ -128,6 +128,10 @@ func (c *Client) ListTracks(purchasedOnly bool, updatedMin int64, pageToken stri
 // empty appears to bypass this server-side check; however, the
 // implementation of ImportTracks cannot handle two tracks in a batch
 // with the same client ID, even if they are both empty.
+//
+// A response to a request sent to a URL returned from this function can
+// report failure through means other than the status code.  Use
+// CheckImportResponse to verify that the request succeeded.
 func (c *Client) ImportTracks(tracks []*Track) (urls []string, errs []error) {
 	// Construct and the client-ID-to-track-index mapping and the
 	// initial metadata upload.
@@ -234,4 +238,23 @@ func (c *Client) ImportTracks(tracks []*Track) (urls []string, errs []error) {
 		urls[i] = res.Transfers[0].PutUrl
 	}
 	return urls, errs
+}
+
+// CheckImportResponse checks the response to an HTTP request sent to a
+// URL returned by Client.ImportTracks.  It returns the server ID of the
+// track to which resp is a response, or an error if the response is
+// erroneous in some way.  The error will be of type *RequestError if
+// the response has a non-2xx status code.  CheckImportResponse closes
+// resp.Body.
+func CheckImportResponse(resp *http.Response) (string, error) {
+	res := new(mmssjs.GetUploadSessionResponse)
+	err := parseResponse(resp, res)
+	switch {
+	case err != nil:
+		return "", err
+	case res.Error != nil:
+		return "", res.Error
+	default:
+		return res.Transfers[0].Name, nil
+	}
 }

@@ -225,6 +225,7 @@ func (c *Client) ImportTracks(tracks []*Track) (urls []string, errs []error) {
 			ClientId:     trk.ClientId,
 			ServerId:     id,
 			TrackBitRate: trk.BitRate,
+			SyncNow:      true,
 			// BUG(lor): Client.ImportTracks does not
 			// activate the upload progress tracker on
 			// https://play.google.com/music.

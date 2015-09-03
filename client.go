@@ -164,12 +164,20 @@ func (c *Client) ImportTracks(tracks []*Track) (urls []string, errs []error) {
 		for i, sci := range res.SignedChallengeInfo {
 			ci := sci.ChallengeInfo
 			j := cidm[ci.ClientTrackId]
-			sample := []byte{}
+			var sample []byte
 			if sampler := tracks[j].Sampler; sampler != nil {
 				sample = sampler(
 					int(ci.StartMillis),
 					int(ci.DurationMillis),
 				)
+			}
+			if sample == nil {
+				// A nil sample is different from an
+				// empty one: the former results in an
+				// invalid sample message.  So, if
+				// Sampler leaves us with a nil sample,
+				// replace it with an empty one.
+				sample = make([]byte, 0)
 			}
 			spls[i] = &mmudpb.TrackSample{
 				Track:               trks[j],

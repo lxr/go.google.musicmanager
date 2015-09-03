@@ -108,11 +108,11 @@ type Track struct {
 	// care.
 	BitRate int
 
-	// The Sampler function can be optionally used to provide the
-	// server with a 128kbps MP3 sample of the track if requested.
-	// It takes the start and length of the desired sample in
-	// milliseconds.  If Sampler is nil, an empty sample is sent.
-	Sampler func(start, duration int) []byte
+	// SampleFunc can be optionally used to provide the server with
+	// a 128kbps MP3 sample of the track if requested.  It takes the
+	// start and length of the desired sample in milliseconds.  If
+	// SampleFunc is nil, an empty sample is sent.
+	SampleFunc func(start, duration int) []byte
 }
 
 // A TrackList is one page of a track listing.

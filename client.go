@@ -165,8 +165,8 @@ func (c *Client) ImportTracks(tracks []*Track) (urls []string, errs []error) {
 			ci := sci.ChallengeInfo
 			j := cidm[ci.ClientTrackId]
 			var sample []byte
-			if sampler := tracks[j].Sampler; sampler != nil {
-				sample = sampler(
+			if sf := tracks[j].SampleFunc; sf != nil {
+				sample = sf(
 					int(ci.StartMillis),
 					int(ci.DurationMillis),
 				)

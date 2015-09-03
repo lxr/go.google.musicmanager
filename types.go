@@ -5,6 +5,7 @@ package musicmanager
 
 import (
 	"fmt"
+	"net/http"
 
 	mmdspb "github.com/lxr/go.google.musicmanager/internal/download_proto/service"
 	mmssjs "github.com/lxr/go.google.musicmanager/internal/session_json"
@@ -44,7 +45,7 @@ func (e ImportError) Error() string {
 type RequestError mmssjs.SessionError
 
 func (e *RequestError) Error() string {
-	return fmt.Sprintf("<!-- server responded with status code %d and the following body: -->\n%s", e.Code, e.Message)
+	return fmt.Sprint("musicmanager request error: ", http.StatusText(e.Code))
 }
 
 // TrackChannels represents the number of channels a Track can have.

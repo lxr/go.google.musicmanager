@@ -39,7 +39,7 @@ func (e ImportError) Error() string {
 // is responded to with a non-2xx status code.
 type RequestError mmssjs.SessionError
 
-func (e RequestError) Error() string {
+func (e *RequestError) Error() string {
 	return fmt.Sprintf("<!-- server responded with status code %d and the following body: -->\n%s", e.Code, e.Message)
 }
 

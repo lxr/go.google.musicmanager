@@ -110,6 +110,6 @@ type SessionError struct {
 	Message string `convert:"/requestRejectedInfo/reasonDescription"`
 }
 
-func (e SessionError) Error() string {
+func (e *SessionError) Error() string {
 	return fmt.Sprintf("session error %d: %s", e.Code, e.Message)
 }

@@ -59,7 +59,9 @@ func (c *Client) Register(name string) error {
 
 // ExportTrack returns a short-lived download URL for the given track,
 // identified by its server ID.  Downloading the track from this URL
-// requires no authentication.
+// requires no authentication.  The Content-Disposition and
+// Content-Length headers of the response contain the name and size of
+// the track respectively.
 func (c *Client) ExportTrack(id string) (string, error) {
 	res, err := c.getDownloadSession(&mmssjs.GetDownloadSessionRequest{
 		XDeviceID: c.id,
@@ -117,9 +119,9 @@ func (c *Client) ListTracks(purchasedOnly bool, updatedMin int64, pageToken stri
 }
 
 // ImportTracks returns short-lived upload URLs for the given tracks.
-// MP3 audio data can be PUT to these URLs without authentication.
-// Individual tracks can fail, in which case errs[i] contains the
-// reason why importing tracks[i] failed.
+// MP3 audio data can be PUT or POSTed to these URLs without
+// authentication.  Individual tracks can fail, in which case errs[i]
+// contains the reason why importing tracks[i] failed.
 //
 // The Title field of a track to be imported cannot be empty.  The
 // server also uses the ClientId field to identify which tracks have

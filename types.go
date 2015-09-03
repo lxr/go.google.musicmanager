@@ -76,13 +76,6 @@ const (
 	Promotional
 )
 
-// An ImageRef is a reference to an external image.
-type ImageRef struct {
-	Url    string
-	Width  uint
-	Height uint
-}
-
 // A Track represents metadata about a track.  When in a TrackList,
 // only a subset of the fields are populated.
 type Track struct {
@@ -109,7 +102,7 @@ type Track struct {
 	Channels        TrackChannels
 	Rating          TrackRating
 	TrackType       TrackType
-	AlbumArtRef     []*ImageRef
+	// BUG(lor): Album art cannot be uploaded.
 
 	// BitRate is the bitrate of the track in kbps, or 0 if don't
 	// care.

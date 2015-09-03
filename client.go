@@ -91,11 +91,24 @@ func (c *Client) ListTracks(purchasedOnly bool, updatedMin int64, pageToken stri
 		UpdatedMin:        updatedMin,
 		ContinuationToken: pageToken,
 	})
-	if err != nil {
+	switch err := err.(type) {
+	case nil:
+		if res.Status != mmdspb.GetTracksToExportResponse_OK {
+			return nil, ListError(res.Status)
+		}
+	case *RequestError:
+		// The Google Play servers respond with 304 Not Modified
+		// if no tracks have been modified after the updatedMin
+		// timestamp.  This is not exactly an error condition,
+		// so we break out of the switch rather than return the
+		// error; the remaining function body then arranges to
+		// return an empty TrackList.
+		if err.Code == http.StatusNotModified {
+			break
+		}
 		return nil, err
-	}
-	if res.Status != mmdspb.GetTracksToExportResponse_OK {
-		return nil, ListError(res.Status)
+	default:
+		return nil, err
 	}
 	trackList := new(TrackList)
 	convert.Convert(trackList, res)

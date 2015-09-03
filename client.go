@@ -36,6 +36,11 @@ func NewClient(client *http.Client, deviceID string) (*Client, error) {
 	return &Client{client, deviceID}, nil
 }
 
+// BUG(lor): Exporting tracks has been known to fail if the device ID of
+// the client is not sufficiently "MAC address-like".  The exact
+// threshold is unknown; perhaps the server only looks for a colon in
+// the ID.
+
 // Register registers the client as a device with the given name under
 // the user's Play Music library.  A client must be registered before
 // the other method calls can succeed.  Re-registering a client can be

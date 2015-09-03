@@ -11,9 +11,6 @@ import (
 	mmuspb "github.com/lxr/go.google.musicmanager/internal/upload_proto/service"
 )
 
-// Scope is the OAuth scope used by this API.
-const Scope = "https://www.googleapis.com/auth/musicmanager"
-
 // A RegisterError is returned by Client.Register if the server refuses
 // to register the client for some reason.
 type RegisterError mmuspb.UploadResponse_AuthStatus

@@ -14,6 +14,9 @@ import (
 	mmuspb "github.com/lxr/go.google.musicmanager/internal/upload_proto/service"
 )
 
+// Scope is the OAuth scope used by this API.
+const Scope = "https://www.googleapis.com/auth/musicmanager"
+
 // Client is a Music Manager client.
 type Client struct {
 	client *http.Client

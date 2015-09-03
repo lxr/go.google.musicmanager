@@ -11,6 +11,10 @@ import (
 	mmuspb "github.com/lxr/go.google.musicmanager/internal/upload_proto/service"
 )
 
+// BUG(lor): The protobuf status enums should probably be exported as
+// individual error variables, rather than types, for ease of
+// comparison.
+
 // A RegisterError is returned by Client.Register if the server refuses
 // to register the client for some reason.
 type RegisterError mmuspb.UploadResponse_AuthStatus

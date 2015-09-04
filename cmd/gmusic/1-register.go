@@ -59,6 +59,10 @@ var creds struct {
 	oauth2.Token
 }
 
+func init() {
+	cmds["register"] = register
+}
+
 func register() error {
 	var id, name string
 	switch len(os.Args) {

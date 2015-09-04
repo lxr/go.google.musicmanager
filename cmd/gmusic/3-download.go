@@ -35,6 +35,10 @@ import (
 	"github.com/lxr/go.google.musicmanager"
 )
 
+func init() {
+	cmds["download"] = download
+}
+
 func download() error {
 	client, err := loadClient()
 	if err != nil {

@@ -10,7 +10,10 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"strings"
 )
+
+var cmds = make(map[string]func() error)
 
 func main() {
 	os.Args = os.Args[1:]
@@ -18,14 +21,14 @@ func main() {
 		os.Args = []string{""}
 	}
 	cmd := os.Args[0]
-	f := map[string]func() error{
-		"register": register,
-		"list":     list,
-		"download": download,
-		"upload":   upload,
-	}[cmd]
+	f := cmds[cmd]
 	if f == nil {
-		fmt.Fprintln(os.Stderr, "usage: gmusic (register | list | download | upload)")
+		cmdslice := make([]string, 0, len(cmds))
+		for cmd := range cmds {
+			cmdslice = append(cmdslice, cmd)
+		}
+		cmdstring := strings.Join(cmdslice, " | ")
+		fmt.Fprintf(os.Stderr, "usage: gmusic (%s)\n", cmdstring)
 		os.Exit(1)
 	}
 	if err := f(); err != nil {

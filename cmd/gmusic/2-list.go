@@ -51,6 +51,10 @@ import (
 var listTpls = template.Must(template.New("tracklist").
 	Parse(`{{range .Items}}{{template "track" .}}{{end}}`))
 
+func init() {
+	cmds["list"] = list
+}
+
 func list() error {
 	var (
 		formatStr = flag.String("f", "{{.Id}}\t{{.Title}}\n",

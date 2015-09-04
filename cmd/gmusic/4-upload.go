@@ -28,6 +28,10 @@ import (
 	"github.com/lxr/go.google.musicmanager"
 )
 
+func init() {
+	cmds["upload"] = upload
+}
+
 func upload() error {
 	client, err := loadClient()
 	if err != nil {

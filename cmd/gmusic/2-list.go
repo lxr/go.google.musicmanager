@@ -75,14 +75,14 @@ func list() error {
 	if err != nil {
 		return err
 	}
-	pageToken := new(string)
+	pageToken := ""
 
 	client, err := loadClient()
 	if err != nil {
 		return err
 	}
-	for pageToken != nil {
-		list, err := client.ListTracks(*purchasedOnly, updatedMin, *pageToken)
+	for {
+		list, err := client.ListTracks(*purchasedOnly, updatedMin, pageToken)
 		if err != nil {
 			return err
 		}
@@ -90,9 +90,9 @@ func list() error {
 		if err != nil {
 			return err
 		}
-		*pageToken = list.PageToken
-		if *pageToken == "" {
-			pageToken = nil
+		pageToken = list.PageToken
+		if pageToken == "" {
+			break
 		}
 	}
 	return nil

@@ -90,7 +90,7 @@ func (c *Client) getDownloadSession(req *mmssjs.GetDownloadSessionRequest) (*mms
 
 func (c *Client) getUploadSession(req *mmssjs.GetUploadSessionRequest) (*mmssjs.GetUploadSessionResponse, error) {
 	res := new(mmssjs.GetUploadSessionResponse)
-	url := "https://uploadsj.clients.google.com/uploadsj/rupio"
+	url := "https://uploadsj.clients.google.com/uploadsj/scottyagent"
 	return res, c.post(url, req, res)
 }
 

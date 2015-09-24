@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/textproto"
 	"net/url"
 
 	"github.com/golang/protobuf/proto"
@@ -141,7 +142,7 @@ func (c *Client) do(req *http.Request, res interface{}) error {
 
 // parseResponse parses resp into res as protobuf if res implements
 // proto.Message, and as JSON otherwise.  If resp has a non-2xx status
-// code, the returned error will be of type *RequestError.
+// code, the returned error will be of type *textproto.Error.
 func parseResponse(resp *http.Response, res interface{}) error {
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
@@ -153,9 +154,9 @@ func parseResponse(resp *http.Response, res interface{}) error {
 	}
 	switch v := res.(type) {
 	case int:
-		return &RequestError{
-			Code:    v,
-			Message: string(buf),
+		return &textproto.Error{
+			Code: v,
+			Msg:  string(buf),
 		}
 	case proto.Message:
 		return proto.Unmarshal(buf, v)

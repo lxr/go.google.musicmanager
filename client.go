@@ -5,6 +5,7 @@ package musicmanager
 import (
 	"fmt"
 	"net/http"
+	"net/textproto"
 
 	convert "github.com/lxr/go.google.musicmanager/internal/convert"
 	mmdspb "github.com/lxr/go.google.musicmanager/internal/download_proto/service"
@@ -103,7 +104,7 @@ func (c *Client) ListTracks(purchasedOnly bool, updatedMin int64, pageToken stri
 		if res.Status != mmdspb.GetTracksToExportResponse_OK {
 			return nil, ListError(res.Status)
 		}
-	case *RequestError:
+	case *textproto.Error:
 		// The Google Play servers respond with 304 Not Modified
 		// if no tracks have been modified after the updatedMin
 		// timestamp.  This is not exactly an error condition,
@@ -251,7 +252,7 @@ func (c *Client) ImportTracks(tracks []*Track) (urls []string, errs []error) {
 // CheckImportResponse checks the response to an HTTP request sent to a
 // URL returned by Client.ImportTracks.  It returns the server ID of the
 // track to which resp is a response, or an error if the response is
-// erroneous in some way.  The error will be of type *RequestError if
+// erroneous in some way.  The error will be of type *textproto.Error if
 // the response has a non-2xx status code.  CheckImportResponse closes
 // resp.Body.
 func CheckImportResponse(resp *http.Response) (string, error) {

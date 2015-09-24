@@ -5,10 +5,8 @@ package musicmanager
 
 import (
 	"fmt"
-	"net/http"
 
 	mmdspb "github.com/lxr/go.google.musicmanager/internal/download_proto/service"
-	mmssjs "github.com/lxr/go.google.musicmanager/internal/session_json"
 	mmuspb "github.com/lxr/go.google.musicmanager/internal/upload_proto/service"
 )
 
@@ -65,14 +63,6 @@ const (
 
 func (e ImportError) Error() string {
 	return fmt.Sprint("musicmanager import error: ", mmuspb.TrackSampleResponse_ResponseCode(e))
-}
-
-// A RequestError is returned by all Client methods if an HTTP request
-// is responded to with a non-2xx status code.
-type RequestError mmssjs.SessionError
-
-func (e *RequestError) Error() string {
-	return fmt.Sprint("musicmanager request error: ", http.StatusText(e.Code))
 }
 
 // TrackChannels represents the number of channels a Track can have.

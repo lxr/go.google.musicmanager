@@ -79,7 +79,7 @@ type GetUploadSessionResponse struct {
 	UploadId string `convert:"/sessionStatus/upload_id"`
 	State    string `convert:"/sessionStatus/state"`
 
-	Error *SessionError `convert:"/errorMessage/additionalInfo/uploader_service.GoogleRupioAdditionalInfo/completionInfo"`
+	Error *SessionError `convert:"/errorMessage/additionalInfo/uploader_service.GoogleRupioAdditionalInfo"`
 
 	Status *struct {
 		Code                int    `convert:"/customerSpecificInfo/ResponseCode"`
@@ -106,7 +106,7 @@ func (r *GetUploadSessionResponse) UnmarshalJSON(buf []byte) error {
 }
 
 type SessionError struct {
-	Code    int    `convert:"/customerSpecificInfo/ResponseCode"`
+	Code    int    `convert:"/completionInfo/customerSpecificInfo/ResponseCode"`
 	Message string `convert:"/requestRejectedInfo/reasonDescription"`
 }
 
